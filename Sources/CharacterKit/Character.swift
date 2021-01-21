@@ -1,4 +1,4 @@
-class Character {
+public class Character {
     
     // MARK: - Variables
     

@@ -1,4 +1,4 @@
-class Item {
+public class Item {
     
     // MARK: - Variables
     

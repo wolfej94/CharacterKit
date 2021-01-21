@@ -1,4 +1,4 @@
-class Inventory {
+public class Inventory {
     
     // MARK: - Variables
     

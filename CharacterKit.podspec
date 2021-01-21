@@ -4,14 +4,14 @@ Pod::Spec.new do |spec|
   spec.version      = "0.1"
   spec.license      = "MIT"
   spec.summary      = "Swift package used to easily integrate elements of classic RPGs into you project."
-  spec.homepage     = "https://github.com/appoly/IdentifyKit"
+  spec.homepage     = "https://github.com/wolfej94/CharacterKit"
   spec.authors = "James Wolfe"
-  spec.source = { :git => 'https://github.com/appoly/IdentifyKit.git', :tag => spec.version }
+  spec.source = { :git => 'https://github.com/wolfej94/CharacterKit.git', :tag => spec.version }
 
   spec.ios.deployment_target = "11.4"
   spec.swift_versions = ["5.0", "5.1"]
   
-  spec.source_files = "Sources/*.swift"
+  spec.source_files = "Sources/CharacterKit/*.swift"
   
 
 end
