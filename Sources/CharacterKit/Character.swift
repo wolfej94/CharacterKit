@@ -1,32 +1,61 @@
-public class Character {
+public class Character: Codable {
     
     // MARK: - Variables
     
-    private(set) var level: Int
-    private(set) var experience: Int
-    private(set) var strength: Int
-    private(set) var perception: Int
-    private(set) var endurance: Int
-    private(set) var charisma: Int
-    private(set) var intelligence: Int
-    private(set) var agility: Int
-    private(set) var luck: Int
-    private(set) var health: Int
-    private(set) var name: String
-    private(set) var gold: Int
-    let inventory: Inventory
+    enum CodingKeys: String, CodingKey {
+        case level = "level"
+        case experience = "experience"
+        case strength = "strength"
+        case perception = "perception"
+        case endurance = "endurance"
+        case charisma = "charisma"
+        case intelligence = "intelligence"
+        case agility = "agility"
+        case luck = "luck"
+        case health = "health"
+        case name = "name"
+        case gold = "gold"
+        case inventory = "inventory"
+    }
     
-    var experienceRequired: Int {
+    private(set) var characterLevel: Int
+    private(set) var characterExperience: Int
+    private(set) var characterStrength: Int
+    private(set) var characterPerception: Int
+    private(set) var characterEndurance: Int
+    private(set) var characterCharisma: Int
+    private(set) var characterIntelligence: Int
+    private(set) var characterAgility: Int
+    private(set) var characterLuck: Int
+    private(set) var characterHealth: Int
+    private(set) var characterName: String
+    private(set) var characterGold: Int
+    public let inventory: Inventory
+    
+    public var level: Int { return characterLevel }
+    public var experience: Int { return characterExperience }
+    public var strength: Int { return characterStrength }
+    public var perception: Int { return characterPerception }
+    public var endurance: Int { return characterEndurance }
+    public var charisma: Int { return characterCharisma }
+    public var intelligence: Int { return characterIntelligence }
+    public var agility: Int { return characterAgility }
+    public var luck: Int { return characterLuck }
+    public var health: Int { return characterHealth }
+    public var name: String { return characterName }
+    public var gold: Int { return characterGold }
+    
+    public var experienceRequired: Int {
         if(level == 70) { return 0 }
         let nextLevel = level + 1
         return nextLevel * 100
     }
     
-    var needsLevelUp: Bool {
+    public var needsLevelUp: Bool {
         return level == 70 ? false : experience >= experienceRequired
     }
     
-    var isDead: Bool {
+    public var isDead: Bool {
         return health <= 0
     }
     
@@ -49,29 +78,73 @@ public class Character {
     
     // MARK: - Initializers
     
-    init(level: Int = 1, experience: Int = 0, strength: Int = 1, perception: Int = 1, endurance: Int = 1, charisma: Int = 1, intelligence: Int = 1, agility: Int = 1, luck: Int = 1, health: Int = 100, name: String, gold: Int = 100, inventory: Inventory? = nil) {
-        self.level = level
-        self.experience = experience
-        self.strength = strength
-        self.perception = perception
-        self.endurance = endurance
-        self.charisma = charisma
-        self.intelligence = intelligence
-        self.agility = agility
-        self.luck = luck
-        self.health = health
-        self.name = name
-        self.gold = gold
+    public init(level: Int = 1, experience: Int = 0, strength: Int = 1, perception: Int = 1, endurance: Int = 1, charisma: Int = 1, intelligence: Int = 1, agility: Int = 1, luck: Int = 1, health: Int = 100, name: String, gold: Int = 100, inventory: Inventory? = nil) {
+        self.characterLevel = level
+        self.characterExperience = experience
+        self.characterStrength = strength
+        self.characterPerception = perception
+        self.characterEndurance = endurance
+        self.characterCharisma = charisma
+        self.characterIntelligence = intelligence
+        self.characterAgility = agility
+        self.characterLuck = luck
+        self.characterHealth = health
+        self.characterName = name
+        self.characterGold = gold
         self.inventory = inventory ?? Inventory()
         self.inventory.character = self
     }
+    
+    
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        characterLevel = try container.decode(Int.self, forKey: .level)
+        characterExperience = try container.decode(Int.self, forKey: .experience)
+        characterStrength = try container.decode(Int.self, forKey: .strength)
+        characterPerception = try container.decode(Int.self, forKey: .perception)
+        characterEndurance = try container.decode(Int.self, forKey: .endurance)
+        characterCharisma = try container.decode(Int.self, forKey: .charisma)
+        characterIntelligence = try container.decode(Int.self, forKey: .intelligence)
+        characterAgility = try container.decode(Int.self, forKey: .agility)
+        characterLuck = try container.decode(Int.self, forKey: .luck)
+        characterHealth = try container.decode(Int.self, forKey: .health)
+        characterName = try container.decode(String.self, forKey: .name)
+        characterGold = try container.decode(Int.self, forKey: .gold)
+        inventory = try container.decode(Inventory.self, forKey: .inventory)
+        inventory.character = self
+    }
+    
+    
+    
+    // MARK: - Codable
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(level, forKey: .level)
+        try container.encodeIfPresent(experience, forKey: .experience)
+        try container.encodeIfPresent(strength, forKey: .strength)
+        try container.encodeIfPresent(perception, forKey: .perception)
+        try container.encodeIfPresent(endurance, forKey: .endurance)
+        try container.encodeIfPresent(charisma, forKey: .charisma)
+        try container.encodeIfPresent(intelligence, forKey: .intelligence)
+        try container.encodeIfPresent(agility, forKey: .agility)
+        try container.encodeIfPresent(luck, forKey: .luck)
+        try container.encodeIfPresent(health, forKey: .health)
+        try container.encodeIfPresent(name, forKey: .name)
+        try container.encodeIfPresent(gold, forKey: .gold)
+        try container.encodeIfPresent(inventory, forKey: .inventory)
+    }
+    
+    
+    
     
     
     
     // MARK: - Actions
     
     public func defeated(target: Character) {
-        experience += target.experience
+        characterExperience += target.experience
     }
     
     
@@ -80,8 +153,8 @@ public class Character {
             throw PurchaseError.notEnoughGold(character: self)
         }
         
-        gold -= item.value
-        seller.gold += item.value
+        characterGold -= item.value
+        seller.characterGold += item.value
         seller.inventory.remove(item: item)
         inventory.add(item: item)
     }
@@ -96,7 +169,7 @@ public class Character {
         guard item.isConsumable else { return }
         guard health < 100 else { throw HealError.healthFull }
         let newHealth = health + item.modifier
-        health = newHealth > 100 ? 100 : newHealth
+        characterHealth = newHealth > 100 ? 100 : newHealth
     }
     
     
@@ -141,9 +214,9 @@ public class Character {
             throw DamageError.attackToWeak(character: self)
         }
         
-        health = health - power
+        characterHealth = health - power
         guard !isDead else {
-            health = 0
+            characterHealth = 0
             throw DamageError.characterDied(character: self)
         }
         
@@ -156,23 +229,23 @@ public class Character {
         
         switch special {
             case .strength:
-                strength += 1
+                characterStrength += 1
             case .perception:
-                perception += 1
+                characterPerception += 1
             case .endurance:
-                endurance += 1
+                characterEndurance += 1
             case .charisma:
-                charisma += 1
+                characterCharisma += 1
             case .intelligence:
-                intelligence += 1
+                characterIntelligence += 1
             case .agility:
-                agility += 1
+                characterAgility += 1
             case .luck:
-                luck += 1
+                characterLuck += 1
         }
         
-        experience = experience - experienceRequired
-        level += 1
+        characterExperience = characterExperience - experienceRequired
+        characterLevel += 1
     }
     
 }
@@ -181,9 +254,9 @@ public class Character {
 
 extension Character {
     
-    public enum Special {
+    public enum Special: Int {
         
-        case strength
+        case strength = 0
         case perception
         case endurance
         case charisma

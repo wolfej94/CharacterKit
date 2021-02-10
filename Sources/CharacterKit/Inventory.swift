@@ -1,16 +1,20 @@
-public class Inventory {
+public class Inventory: Codable {
     
     // MARK: - Variables
     
-    private var items: [Item]
-    var character: Character?
+    enum CodingKeys: String, CodingKey {
+        case items = "items"
+    }
     
-    var armorModifier: Int {
+    private var items: [Item]
+    public var character: Character?
+    
+    public var armorModifier: Int {
         let armor = items(for: [.headArmor, .torsoArmor, .handsArmor, .legsArmor, .feetArmor]).filter({ $0.equipped })
         return armor.reduce(0, { $0 + $1.modifier })
     }
     
-    var damageModifier: Int {
+    public var damageModifier: Int {
         let armor = items(for: [.meleeWeapon, .rangedWeapon]).filter({ $0.equipped })
         return armor.reduce(0, { $0 + $1.modifier })
     }
@@ -19,34 +23,51 @@ public class Inventory {
     
     // MARK: - Initializers
     
-    init(items: [Item] = []) {
+    public init(items: [Item] = []) {
         self.items = items
     }
     
     
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        items = try container.decode([Item].self, forKey: .items)
+    }
+    
+    
+    
+    // MARK: - Codable
+    
+    public func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(items, forKey: .items)
+    }
+    
+    
+    
     // MARK: - Getters
     
-    func items(for type: Item.ItemType) -> [Item] {
+    public func items(for type: Item.ItemType) -> [Item] {
         return items.filter({ $0.type == type })
     }
     
     
-    func items(for types: [Item.ItemType]) -> [Item] {
+    public func items(for types: [Item.ItemType]) -> [Item] {
         return items.filter({ types.contains($0.type) })
     }
     
     
-    func equipped(for type: Item.ItemType) -> Item? {
+    public func equipped(for type: Item.ItemType) -> Item? {
         return items.filter({ $0.type == type && $0.equipped }).first
     }
     
     
-    func add(item: Item) {
+    public func add(item: Item) {
         items.append(item)
     }
     
     
-    func remove(item: Item) {
+    public func remove(item: Item) {
         guard let index = items.firstIndex(where: { $0.id == item.id }) else { return }
         
         if(item.equipped) {
@@ -57,13 +78,13 @@ public class Inventory {
     }
     
     
-    func equip(item: Item) {
+    public func equip(item: Item) {
         unequip(type: item.type)
         item.equipped = true
     }
     
     
-    func unequip(type: Item.ItemType) {
+    public func unequip(type: Item.ItemType) {
         equipped(for: type)?.equipped = false
     }
     
